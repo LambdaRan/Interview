@@ -678,7 +678,7 @@ TeddyBear();     // 最底层的派生类
 ## vector实现
 > 关于vector问的比较多,所以最好自己实现一个vector
 
-模拟Vector实现
+[模拟Vector实现](https://github.com/LambdaRan/Interview/blob/master/code/myVector.cpp)
 
 * 线性表，数组实现。
     * 支持随机访问。
@@ -698,7 +698,7 @@ TeddyBear();     // 最底层的派生类
 
 可以参考酷壳中陈硕大牛的文章: [C++面试中STRING类的一种正确写法](https://coolshell.cn/articles/10478.html)   
 
-参看实现
+[参看实现](https://github.com/LambdaRan/Interview/blob/master/code/myString.cpp)
 ## map与set
 
 很多面试官都会问道map与set底层实现原理红黑树,所以如果有时间自己实现一遍
@@ -715,3 +715,5 @@ TeddyBear();     // 最底层的派生类
 bind functional lambda type_traits
 
 ## 介绍C++11特性
+* lambda表达式
+* 智能指针:shared_ptr,unique_ptr,weak_ptr

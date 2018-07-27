@@ -1,29 +1,21 @@
 #include <iostream>
 
-class A {
-public:
-    A() {
-        std::cout << "A" << std::endl;
-    }
-    virtual ~A(){}
-};
-class B {
-public:
-    B() {
-        std::cout << "B" << std::endl;
-    }
-    ~B() {}
-};
-class C : A {
-public:
-    C() {
-        std::cout << "C" << std::endl;
-    }
-    ~C(){}
-    B b;
-};
+
+int func1(const int& v1)
+{
+    int re = v1;
+    return re;
+}
+
+int func2(const int& v2)
+{
+    int re = func1(v2);
+    return re;
+}
+
 int main()
 {
-    C c;
-   return 0;
+    std::cout << func2(3) << std::endl;;
+
+    return 0;
 }

@@ -59,7 +59,7 @@ SYSLIB =
 OBJDIR = .
 #SRCS = $(wildcard ./*.cpp)
 SRCDIRS = .
-SRCS = $(SRCDIRS)/test_getpwuid_r.cpp
+SRCS = $(SRCDIRS)/myVector.cpp
 
 
  #指定头文件目录，代码中就不需要把头文
