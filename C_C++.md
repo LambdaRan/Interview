@@ -4,11 +4,11 @@
 
 
 
-# 目录
+# <span id = "root">目录</span>
 
 | Chapter 1 | Chapter 2 | Chapter 3| Chapter 4 | 
 | :---------: | :---------: | :---------: | :---------: | 
-| [编程基础](base)|[面向对象基础](#oop)|[标准模板库](#stl)|[编译及调试](#other)|
+| [编程基础](#base)|[面向对象基础](#oop)|[标准模板库](#stl)|[待定](#other)|
 
 
 # <span id = "base">编程基础</span>
@@ -449,8 +449,8 @@ $ ld
 * reinterpret_cast 通常为运算对象的位模式提供较底层次上的重新解释;
 * dynamic_cast 
 
-# <span id = "base">面向对象基础</span>
-
+# <span id = "oop">面向对象基础</span>
+> [回到目录](#root)
 ## 1. 面向对象三大特性
 * 封装性：数据和代码捆绑在一起，避免外界干扰和不确定性访问。
 * 继承性：让某种类型对象获得另一个类型对象的属性和方法。
@@ -671,7 +671,8 @@ TeddyBear();     // 最底层的派生类
 // 析构顺序正好相反
 ```
 
-# <span id = "base">标准模板库</span>
+# <span id = "stl">标准模板库</span>
+> [回到目录](#root)
 
 ##  
 * STL组成部分（容器、仿函数、配置器、配接器、迭代器、算法）
@@ -698,7 +699,7 @@ TeddyBear();     // 最底层的派生类
 
 可以参考酷壳中陈硕大牛的文章: [C++面试中STRING类的一种正确写法](https://coolshell.cn/articles/10478.html)   
 
-[参看实现](https://github.com/LambdaRan/Interview/blob/master/code/myString.cpp)
+[模拟String实现](https://github.com/LambdaRan/Interview/blob/master/code/myString.cpp)
 ## map与set
 
 很多面试官都会问道map与set底层实现原理红黑树,所以如果有时间自己实现一遍
