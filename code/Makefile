@@ -8,7 +8,7 @@
 # 		 -Wformat-nonliteral -Wmissing-braces -Wuninitialized \
 # 		 -Wmissing-declarations  -Winline \
 # 		 -Wmissing-prototypes -Wtraditional -Wredundant-decls -pedantic
-
+CXXFLAGS = -g
 CXXFLAGS += -Wall -Wextra -Werror -Wfatal-errors -std=c++11
 # CXXFLAGS += -O -Wpointer-arith \
 # 		-Wno-parentheses -Wunreachable-code -Wundef -Wctor-dtor-privacy \
@@ -59,7 +59,7 @@ SYSLIB =
 OBJDIR = .
 #SRCS = $(wildcard ./*.cpp)
 SRCDIRS = .
-SRCS = $(SRCDIRS)/myVector.cpp
+SRCS = $(SRCDIRS)/myList.cpp
 
 
  #指定头文件目录，代码中就不需要把头文

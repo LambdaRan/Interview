@@ -700,6 +700,10 @@ TeddyBear();     // 最底层的派生类
 可以参考酷壳中陈硕大牛的文章: [C++面试中STRING类的一种正确写法](https://coolshell.cn/articles/10478.html)   
 
 [模拟String实现](https://github.com/LambdaRan/Interview/blob/master/code/myString.cpp)
+
+## list实现
+[模拟list实现](https://github.com/LambdaRan/Interview/blob/master/code/myList.cpp)
+
 ## map与set
 
 很多面试官都会问道map与set底层实现原理红黑树,所以如果有时间自己实现一遍
@@ -710,7 +714,38 @@ TeddyBear();     // 最底层的派生类
 ## 智能指针
 
 ## 迭代器种类
-
+> 迭代器(iterator)扮演STL中容器和算法粘合剂的作用;使得算法的实现不依赖与容器的具体类型;
+#### std::iterator_traits   
+实现原理: "内嵌类型"编程技巧 与 编译器的template参数推导   
+能够获取到容器中所存储元素的类型,如果想使得自己设计的迭代器与STL算法兼容,自定义迭代器必须包含一下内嵌类型或直接继承自std::iterator   
+[参考](https://en.cppreference.com/w/cpp/iterator/iterator)    
+```
+difference_type - 可用来标识迭代器间距离的有符号整数类型
+value_type - 迭代器解除引用后所得到的值的类型。对于输出迭代器，该类型为 void 。
+pointer - 指向被迭代类型（ value_type ）的指针
+reference - 被迭代类型（ value_type ）的引用类型
+iterator_category - 迭代器类别。必须是迭代器类别标签之一。
+```
+iterator_category(类别标签)的作用是:编译器利用类别标签来进行重载的决议,来选择更加匹配的函数实现底层操作;    
+达到不同的迭代器选择不同的函数(实现方式);   
+[参考](https://en.cppreference.com/w/cpp/iterator/iterator_tags)    
+```
+struct input_iterator_tag { };
+struct output_iterator_tag { };
+struct forward_iterator_tag : public input_iterator_tag { };
+struct bidirectional_iterator_tag : public forward_iterator_tag { };
+struct random_access_iterator_tag : public bidirectional_iterator_tag { };
+```
+* 在迭代器中: 迭代器类别应该定义为 该迭代器所属各种类型中,最强化的那个;
+* STL算法一个命名规则:以算法所能接受之最低阶迭代器类型,来为其迭代器类别参数命名;
+### 5种迭代器
+```
+input_iterator_tag 对应 输入迭代器 (InputIterator) 。
+output_iterator_tag 对应 输出迭代器 (OutputIterator) 。
+forward_iterator_tag 对应 向前迭代器 (ForwardIterator) 。
+bidirectional_iterator_tag 对应 双向迭代器 (BidirectionalIterator) 。
+random_access_iterator_tag 对应 随机访问迭代器 (RandomAccessIterator) 。
+```
 ## 其他
 
 bind functional lambda type_traits

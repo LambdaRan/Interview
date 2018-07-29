@@ -103,12 +103,8 @@ public:
         else  
         {
             size_type erase_size = last - first;
-            uninitialized_copy(last, end(), first);
-            while(erase_size > 0)
-            {
+            while(erase_size--)
                 allocator_.destroy(--finish_);
-                --erase_size;
-            }
         }
         return first;
     }
@@ -135,11 +131,9 @@ private:
     void destroy(iterator first, iterator last)
     {
         size_type erase_size = last - first;
-        while (erase_size > 0)
-        {
+        while (erase_size--)
             allocator_.destroy(--finish_);
-            --erase_size;
-        }
+        
     }
     void deallocate()
     {
