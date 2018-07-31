@@ -12,7 +12,7 @@
 
 template<typename T>
 struct _list_node {
-    _list_node(const T& x) : data_(x) {}
+    explicit _list_node(const T& x) : prev_(0), next_(0), data_(x) {}
     //typedef void* void_pointer;
     typedef _list_node<T>* void_pointer;
     void_pointer prev_;
@@ -132,6 +132,7 @@ public:
     {
         _empty_initialize();
         std::copy(rhs.begin(), rhs.end(), std::back_inserter(*this)); 
+        return *this;
     }
     ~List() { clear(); node_ = 0; }
     iterator begin() { return iterator((*node_).next_); }
@@ -383,7 +384,7 @@ void List<T>::sort()
         if (i == fill) ++fill;
     }
 
-    for (int i = 0; i < fill; i++)
+    for (int i = 1; i < fill; i++)
     {
         counter[i].merge(counter[i-1]);
     }
@@ -456,6 +457,7 @@ int main()
     std::copy(ilist.begin(), ilist.end(), std::ostream_iterator<int>(std::cout, " "));
     std::cout << std::endl;
 
+    // ilist.sort();
 
     List<int> ilist2(ilist);
     ilist.insert(ilist.begin(), 66);
