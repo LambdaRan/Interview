@@ -54,12 +54,12 @@ CXXFLAGS += -Wall -Wextra -Werror -Wfatal-errors -std=c++11
 CC = g++
 
 PROJECT = main
-SYSLIB = 
+SYSLIB = -lpthread
 
 OBJDIR = .
 #SRCS = $(wildcard ./*.cpp)
 SRCDIRS = .
-SRCS = $(SRCDIRS)/myList.cpp
+SRCS = $(SRCDIRS)/reactor_main.cpp
 
 
  #指定头文件目录，代码中就不需要把头文
