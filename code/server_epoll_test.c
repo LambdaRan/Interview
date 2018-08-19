@@ -62,6 +62,16 @@ int bind_and_listen()
 	printf("listen ok \n");
 	return serverfd;   
 }
+void add_event(int epollfd, int fd, int state){
+	// ev用注册事件，state表示监听的事件，fd是被注册的fd
+	struct epoll_event ev;
+	ev.events = state;
+	ev.data.fd = fd;
+	// 调用epoll_ctl注册，函数类型通过EPOLL_CTL_XX来区别
+	// 将新的fd注册到epollfd
+	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+}
+
 void delete_event(int epollfd, int fd, int state){
 	struct epoll_event ev;
 	ev.events = state;
@@ -112,15 +122,6 @@ void do_write(int epollfd, int fd, char *buff){
 	memset(buff, 0, MAXSIZE);
 }
 
-void add_event(int epollfd, int fd, int state){
-	// ev用注册事件，state表示监听的事件，fd是被注册的fd
-	struct epoll_event ev;
-	ev.events = state;
-	ev.data.fd = fd;
-	// 调用epoll_ctl注册，函数类型通过EPOLL_CTL_XX来区别
-	// 将新的fd注册到epollfd
-	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
-}
 
 
 void handle_accept(int epollfd, int listenfd){

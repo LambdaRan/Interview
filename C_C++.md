@@ -712,7 +712,7 @@ TeddyBear();     // 最底层的派生类
 
 
 ## 智能指针
-
+shared_ptr是管理共享资源的利器，需要注意避免循环引用，通常的做法是ower持有child的shared_ptr,child持有指向owner的weak_ptr.
 ## 迭代器种类
 > 迭代器(iterator)扮演STL中容器和算法粘合剂的作用;使得算法的实现不依赖与容器的具体类型;
 #### std::iterator_traits   
