@@ -215,6 +215,12 @@ int *const a;
 * int const a和const int a均表示定义常量类型a。
 * const int * a,其中a为指向int型变量的指针, const在 * 左侧，表示a指向不可变常量。(看成const (*a)，对引用加const)
 * int *const a，依旧是指针类型，表示a为指向整型数据的常指针。(看成const(a)，对指针const)
+```
+const int* p;
+指向常量的指针；不能通过p修改所指向的值；指针p可指向其他变量；
+int* const pp;
+常量指针；可通过pp修改所指向的值；但指针pp不可再指向其他变量；
+```
 ### 顶层const与底层const
 * 顶层const(top-level const)表示指针本身是个常量
 * 底层const(low-level const) 表示指针所指的对象是一个常量
@@ -277,6 +283,7 @@ int (*p)[10] = &a;
     * 指针操作超越了变量的作用域范围；
 ## 13. volatile mutable
 
+* 参考：http://hedengcheng.com/?p=725
 * volatile定义变量的值是易变的，每次用到这个变量的值的时候都要去重新读取这个变量的值，而不是读寄存器内的备份。
 * 多线程中被几个任务共享的变量需要定义为volatile类型。
 
@@ -310,12 +317,12 @@ void fcn()
     * 在堆区分配,在栈区分配,静态存储区分配 (待考证)
 * 重载new和delete
     * `new 表达式 执行三个步骤`
-        1. 第一步 new表达式调用一个名为**operator new(或operator new[])**的标准库函数.该函数分配一个足够大的,原始的,未命名的内存空间以便存储待定类型的对象(或对象数组);
+        1. 第一步 new表达式调用一个名为 **operator new(或operator new[])** 的标准库函数.该函数分配一个足够大的,原始的,未命名的内存空间以便存储待定类型的对象(或对象数组);
         2. 第二步 编译器运行对应的构造函数以构造这些对象,并为其传入初始值;
         3. 第三步 对象被分配空间并构造完成,返回一个指向该对象的指针;
     * `delete表达式 执行两个步骤`
         1. 第一步 对指针所指对象或者对象数组指针所指的数组中的元素执行对应的析构函数;
-        2. 第二步 编译器调用名为**operator delete(或operator delete[])**的标准库函数释放内存空间;
+        2. 第二步 编译器调用名为 **operator delete(或operator delete[])** 的标准库函数释放内存空间;
     * `应用程序可以在全局作用域中定义operator new函数和operator delete函数,也可以将他们定义为成员函数`
 
 ## 16. 源码到可执行文件的过程
@@ -545,12 +552,6 @@ void func(char*, int[], double*){}
 * 派生类的构造函数。
 * 析构函数与之相反。
 
-## 8. 构造函数调用顺序，析构函数呢
-* 基类的构造函数：如果有多个基类，先调用纵向上最上层基类构造函数，如果横向继承了多个类，调用顺序为派生表从左到右顺序。
-* 成员类对象的构造函数：如果类的变量中包含其他类（类的组合），需要在调用本类构造函数前先调用成员类对象的构造函数，调用顺序遵照在类中被声明的顺序。
-* 派生类的构造函数。
-* 析构函数与之相反。
-
 ## 9. 防止继承的发生
 * 方法一:利用虚拟继承
 ```
@@ -575,6 +576,8 @@ public:
     Tr() {}
     ~Tr() {}
 };
+// 尽管MakeSealed<SealedClass>的构造函数与析构函数都是私有的，但由于类SealedClass是它的友元类型，
+// 因此在SealedClass中调用MakeSealed<SealedClass>的构造函数和析构函数就不会出错。
 ```
 * 方法二: C++11 新标准提供防止继承的方法,在类名后跟一个关键字final
 ```
@@ -756,7 +759,7 @@ bind functional lambda type_traits
 
 
 
-```
+
 p121：
     当一个对象被用作右值的时候，用的是对象的值（内容）
     当对象被用作左值的时候，用的是对象的身份（在内存中的位置）
@@ -784,16 +787,29 @@ p121：
 P608
 当一个函数参数是模板类型参数的一个普通（左值）引用时（即形如T&）
     只能传递给它一个左值
-    template<typename T> void f(T &p);
-
+```
+template<typename T> void f1(T&); // 实参必须是一个左值
+// 对f1的调用使用实参所引用的类型作为模板参数类型
+f1(i); // i是一个int；模板参数类型T为int
+f1(ci); // ci是一个const int；模板参数T是const int
+f1(5); // 错误：传递给一个&参数的实参必须是一个左值
+```
 如果一个函数参数的类型是const T&
-    我们可以传递给它-- 一个对象（const或非const），一个临时对象或一个字面常量值。
-    template<typename T> void f(const T &p);
-
+    我们可以传递给它 一个对象（const或非const），一个临时对象或一个字面常量值。
+    当函数参数本身是const时,T的类型推断的结果不会是一个const类型。
+```
+template<typename T> void f(const T &p); // 可以接收一个右值
+// f2中的参数类型是const &,实参中的const是无关的
+// 在每个调用中,f2的函数参数都被推断为 const int&
+f2(i); // i是一个int；模板参数类型T为int
+f2(ci); // ci是一个const int；模板参数T是int
+f2(5); // 一个const &可以绑定到一个右值；T是int
+```
 当一个函数参数是模板类型参数的一个右值引用时（即形如T&&）
     //可以传递给它一个右值
     任意类型实参
-    template<typename T> void f(T &&p);
+    template<typename T> void f3(T &&p);
+    f3(42); // 实参是一个int类型的右值；模板参数T是int
 
 我们不能将一个右值引用绑定到一个左值上，两个例外情况：
     1.影响将一个右值引用参数的推断如何进行。
@@ -802,19 +818,83 @@ P608
             template<typename T> void f(T &&p);
             int value = 32；
             f(value); // 此时 T为 int&
+
     1.如果我们间接创建一个引用的引用，则这些引用形成了“折叠”；
         X& &、X& &&和X&& &都折叠成类型X&
         类型X&& &&折叠成X&&
-
+```
+template<typename T> void f3(T &&p);
+f3(i); // 实参是一个左值；模板参数T是一个int&
+f3(ci); // 实参是一个左值；模板参数T是一个const int&
+```
 如果一个函数参数是一个指向模板类型参数的右值引用（如，T&&），则他可以被绑定到一个左值，且
 如果实参是一个左值，则推断出的模板实参类型将是一个左值引用，且函数函数参数将被实例化为一个（普通）左值引用参数（T&）
 
 右值引用通常用于两种情况：
     模板转发其实参
     模板被重载
+```
+P610
+/***************************************************************************/
+//
+// Exercise 16.42:
+// Determine the type of T and of val in each of the following calls:
+//     template <typename T> void g(T&& val);
+//     int i = 0; const int ci = i;
+//     (a) g(i);
+//  since i is lvalue, T is deduced as int&, val is int& && collapsing to int&
+//     (b) g(ci);
+//  since ci is lvaue, T is deduced as const int&, val is const int& && collapsing to const int&
+//     (c) g(i * ci);
+//  since i * ci is rvalue, T is deduced as int, val is int&& && colapsing to int&&
+//
+// Exercise 16.43:
+// Using the function defined in the previous exercise, what would the template
+// parameter of g be if we called g(i = ci)?
+//      (i = ci) returns lvalue refering to the object i.
+//      Hence T is deduced as int& val is int& && .
+//      any change on val changes the object i.
+//
+// Exercise 16.44:
+// Using the same three calls as in the first exercise, determine the types for T
+// if g’s function parameter is declared as T (not T&&).
+//                                           ^
+//      g(i);       --  T is deduced as int
+//      g(ci);      --  T is deduced as int, const is ignored.
+//      g(i * ci);  --  T is deduced as int, (i * ci) returns rvalue which is copied to
+//                      T
+// What if g’s function parameter is const T&?
+//                                    ^^^^^^^^
+//      g(i)        --  T is deduced as int  , val : const int&
+//      g(ci)       --  T is deduced as int  , val : const int&
+//      g(i * ci)   --  T is deduced as int  , val : const int&(see example on page 687)
+//
+// Exercise 16.45:
+// Given the following template, explain what happens if we call g on a literal value
+// such as 42. What if we call g on a variable of type int?
+//     template <typename T> void g(T&& val) { vector<T> v; }
+//
+// Discussion on SO:
+//  http://stackoverflow.com/questions/21624016/when-a-lvalue-is-passed-to-t-what-will-happen
+//
+//     relevant section from textbook:
+// When we pass an lvalue (e.g., i) to a function parameter that is an rvalue reference to a
+// template type parameter (e.g, T&&), the compiler deduces the template type parameter as the
+// argument’s lvalue reference type. So, when we call f3(i), the compiler deduces the type of
+// T as int&, not int.
+//         --  P.688
+//
+// In this case, when calling on a literal value, say 42. int&& && will collapse to int&&. At last
+// T is deduced as int. Hence std::vector<T> is instantiated as std::vector<int> which is legal.
+//
+// When calling on a variable int. T will be deduced as int&. int & && will collapse to int&.
+// std::vector<int&> is not legal. The reason why int& can't be element of a vector can be found at:
+//  http://stackoverflow.com/questions/922360/why-cant-i-make-a-vector-of-references
+//
+```
 
 P613
-如果一个函数蚕食是指向模板类型参数的右值引用，它对应的实参的const属性和左值/右值属性将得到保持。
+如果一个函数参数是指向模板类型参数的右值引用，它对应的实参的const属性和左值/右值属性将得到保持。
 
 当用于一个指向模板参数类型的右值引用函数参数（T&&）时，forward会保持实参类型的所有细节
 
@@ -825,4 +905,3 @@ int& forward<int&>(int&&);
 int&& forward<int>(int&);
 int&& forward<int>(int&&);
 
-```
