@@ -1,7 +1,6 @@
+
 #include <iostream>
-#include <vector>
-#include <initializer_list>
-#include <memory>
+#include "ScopedPtr.h"
 
 using namespace std;
 
@@ -17,13 +16,13 @@ public:
         cout << "~TA()" << endl;
     }
 };
+
 int main()
 {
     {
-        std::unique_ptr<TA[]> uaar(new TA[3]);
+        ScopedPtr<TA> ta1(new TA());
     }
-
-    std::shared_ptr<int> sp1;
-    cout << sp1.use_count() << endl;
+    ScopedPtr<TA> ta2(new TA());
+    
     return 0;
 }

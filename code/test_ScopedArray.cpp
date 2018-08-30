@@ -1,7 +1,6 @@
+
 #include <iostream>
-#include <vector>
-#include <initializer_list>
-#include <memory>
+#include "ScopedArray.h"
 
 using namespace std;
 
@@ -17,13 +16,13 @@ public:
         cout << "~TA()" << endl;
     }
 };
+
 int main()
 {
     {
-        std::unique_ptr<TA[]> uaar(new TA[3]);
+        ScopedArray<TA> ta1(new TA[3]);
     }
-
-    std::shared_ptr<int> sp1;
-    cout << sp1.use_count() << endl;
+    ScopedArray<int> ta2(new int[3]);
+    cout << ta2[1] << endl;
     return 0;
 }
