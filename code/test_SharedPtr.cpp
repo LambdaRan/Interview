@@ -1,6 +1,6 @@
-
-#include "SharedPtrII.h"
+#include "SharedPtr.h"
 #include <iostream>
+#include <string>
 #include <assert.h>
 
 
@@ -29,28 +29,41 @@ struct Free
 	}
 };
 
+void testCase1()
+{
+    SharedPtr<int> sp1(new int(10));
+    assert(*(sp1.get()) == 10);
+
+    SharedPtr<int> sp2(new int(1), default_delete<int>());
+    assert(sp2.use_count() == 1);
+
+    auto sp3(sp2); // 拷贝构造函数
+    assert(sp3.use_count() == 2);
+    {
+        auto sp4 = sp2;
+        assert(sp4.use_count() == 3 && sp3.use_count() == sp4.use_count());
+
+        assert(sp2.get() == sp3.get() && sp2.get() == sp4.get());
+        assert(sp2 == sp3 && !(sp2 != sp4));
+    }
+    assert(sp3.use_count() == 2);
+
+    SharedPtr<string> sp5(new string("hello"));
+    assert(*sp5 == "hello");
+    sp5->append(" world");
+    assert(*sp5 == "hello world");
+
+    auto sp6 = makeShared<string>(10, '0');
+    assert(*sp6 == "0000000000");
+
+    SharedPtr<int> spp;
+    assert(spp == nullptr);
+    assert(!(spp != nullptr));
+}
 int main()
 {
-    SharedPtr<TA> sp1(new TA());
-    assert(sp1.use_count() == 1);
+    cout << "Test SharedPtr" << endl;
+    testCase1();
 
-    // 拷贝构造函数
-    SharedPtr<TA> sp2(sp1);
-    assert(sp2.use_count() == 2);
-
-    {// 拷贝赋值运算符
-        SharedPtr<TA> sp3 = sp2;
-        assert(sp3.use_count() == 3);
-    }
-    assert(sp2.use_count() == 2);
-
-    SharedPtr<int> spi(new int(66));
-    cout << *spi << endl;
-
-    int* iptr = spi.get();
-    cout << *iptr << endl;
-
-    SharedPtr<string, Free> sp4((string *)malloc(sizeof(string)), Free());//字符串操作
-
-    return 0;
+    return 0;    
 }

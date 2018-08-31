@@ -4,6 +4,10 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+//#include <cstddef> // nullptr_t
+
+template<typename _T>
+class cow_ptr;
 
 namespace Detail
 {
@@ -86,9 +90,100 @@ bool operator!=(const ref_t<T>& lhs, const ref_t<T>& rhs)
 template<typename T>
 class SharedPtr
 {
+public: 
+    typedef T element_type;
+private: 
+    template<typename Type>
+    using ref_t = Detail::ref_t<Type>;
+public: 
+    explicit SharedPtr(T* p = nullptr)
+        : ref_(new ref_t<T>(p))
+    {}
+    template<typename D>
+    SharedPtr(T* p, D del)
+        : ref_(new ref_t<T>(p, del))
+    {}
+    // 拷贝构造函数
+    SharedPtr(const SharedPtr& rhs)
+    {
+        _copy_ref(rhs.ref_);
+    }
+    SharedPtr& operator=(const SharedPtr& rhs)
+    {
+        if (this != &rhs)
+        {
+            _decrease_ref();
+            _copy_ref(rhs.ref_);
+        }
+        return *this;
+    }
+    ~SharedPtr() { _decrease_ref(); }
 
+    element_type& operator*() { return *(get()); }
+    element_type& operator*() const { return *(get()); }
+    element_type* operator->() { return &(operator*()); }
+    element_type* operator->() const { return &(operator*()); }
 
+    element_type* get() { return ref_->get_data(); }
+    element_type* get() const { return ref_->get_data(); }
+    size_t use_count() const { return ref_->count(); }
+
+    operator bool() const { return get() != nullptr; }
+private: 
+    void _decrease_ref()
+    {
+        if (ref_->get_data())
+        {
+            --(*ref_);
+            if (use_count() == 0)
+                delete ref_;
+        }
+    }
+    void _copy_ref(ref_t<T> *ref)
+    {
+        ref_ = ref;
+        ++(*ref_);
+    }
+private:
+    ref_t<T>* ref_;
+public: 
+    template<typename _T>
+    friend class cow_ptr;
 };
+                                                                                                                                                                     
+template<typename T1, typename T2>
+bool operator== (const SharedPtr<T1>& lhs, const SharedPtr<T2>& rhs)
+{
+    return lhs.get() == rhs.get();
+}
+template<typename T>
+bool operator== (const SharedPtr<T>& lhs, std::nullptr_t p)
+{
+    return lhs.get() == p;
+}
+template<typename T>
+bool operator== (std::nullptr_t p, const SharedPtr<T>& sp){
+    return sp == p;
+}
+template<typename T1, typename T2>
+bool operator!= (const SharedPtr<T1>& lhs, const SharedPtr<T2>& rhs)
+{
+    return !(lhs == rhs);
+}
+template<typename T>
+bool operator!= (const SharedPtr<T>& lhs, std::nullptr_t p)
+{
+    return !(lhs == p);
+}
+template<typename T>
+bool operator!= (std::nullptr_t p, const SharedPtr<T>& rhs){
+    return !(rhs == p);
+}
 
+template<typename T, typename...Args>
+SharedPtr<T> makeShared(Args... args)
+{
+    return SharedPtr<T>(new T(std::forward<Args>(args)...));
+}
 
 #endif // !RDG_SHAREDPTR_H

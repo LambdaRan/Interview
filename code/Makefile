@@ -59,7 +59,7 @@ SYSLIB = -lpthread
 OBJDIR = .
 #SRCS = $(wildcard ./*.cpp)
 SRCDIRS = .
-SRCS = $(SRCDIRS)/test_SharedPtr.cpp
+SRCS = $(SRCDIRS)/test_CowPtr.cpp
 
 
  #指定头文件目录，代码中就不需要把头文
