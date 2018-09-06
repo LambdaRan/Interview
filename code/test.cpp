@@ -2,54 +2,31 @@
 #include <vector>
 #include <initializer_list>
 #include <memory>
+#include <type_traits>
+#include <array>
+
+#include <string.h>
 
 using namespace std;
 
-class TA 
+//#pragma GCC diagnostic ignored "-Wunused-parameter"
+template <class T, std::size_t N>
+constexpr std::size_t size(const T (&pArray)[N]) noexcept
 {
-public:
-    TA(int val) : value_(val)
-    {
-        cout << "TA("<< value_<< ")" << endl;
-    }
-    ~TA() 
-    {
-        cout << "~TA(" << value_ << ")"<< endl;
-    }
-    int value_;
-};
-
+    return (void)pArray, N;
+}
+//#pragma GCC diagnostic error "-Wunused-parameter"
 
 int main()
 {
-    std::shared_ptr<vector<TA>> g_spv = std::make_shared<vector<TA>>();
-    g_spv->push_back(std::move(TA(1)));
-    g_spv->push_back(std::move(TA(2)));
-    // 1 2
-    cout << "0. g_spv.use_count:" << g_spv.use_count() << " vector.size:" << g_spv->size() << endl;
-    {// 模拟读
-        std::shared_ptr<vector<TA>> sp2 = g_spv;
-        // 2 2
-        cout << "1. g_spv.use_count:" << g_spv.use_count() << " vector.size:" << g_spv->size() << " ";
-        cout << "sp2.use_count:" << sp2.use_count() << endl;
-        // 模拟写
-        if (!g_spv.unique()) // 不是独占，需要复制一份
-        {
-            //std::shared_ptr<vector<TA>> newData(new vector<TA>(*g_spv));
-            //g_spv.swap(newData);
-            g_spv.reset(new vector<TA>(*g_spv));
-            g_spv->push_back(std::move(TA(3)));
-            // 1 3
-            cout << "2. g_spv.use_count:" << g_spv.use_count() << " vector.size:" << g_spv->size() << " ";
-            cout << "sp2.use_count:" << sp2.use_count() << endl;
-        } // 旧析构
-        // 1 3
-        cout << "3. g_spv.use_count:" << g_spv.use_count() << " vector.size:" << g_spv->size() << " ";
-        cout << "sp2.use_count:" << sp2.use_count() << endl;
-    }
+    int arr[10];
+    //int ints[] = {1,2,3,4};
+    int ints[3][4];
+    std::cout << std::extent<decltype(ints), 0>::value << '\n'; //< array size 
+    std::cout << std::extent<decltype(ints), 1>::value << '\n'; //< array size 
+    std::cout << std::rank<decltype(arr)>::value << endl;
+    std::cout << std::rank<int[1][2][3]>::value << '\n';
 
-    // 1 3
-    cout << "4. g_spv.use_count:" << g_spv.use_count() << " vector.size:" << g_spv->size() << endl;
-
+      cout << size(arr) << endl;
     return 0;
 }
